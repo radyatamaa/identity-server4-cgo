@@ -1,0 +1,42 @@
+version: 1.0.{build}
+
+image:
+- Visual Studio 2017
+- Ubuntu
+
+environment:
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
+
+branches:
+  except:
+  - master
+
+build_script:
+- ps: .\build.ps1
+- sh: ./build.sh
+
+test: off
+artifacts:
+- path: artifacts/packages/*.nupkg
+
+deploy: off
+for:
+-
+  matrix:
+    only:
+      - image: Visual Studio 2017
+  deploy:
+  - provider: NuGet
+    server: https://www.myget.org/F/identity/
+    api_key:
+      secure: 43SK7fLJcrno252Wqb6j+jFYeTjaHG8EWXruhHv6kW+bbySa4uBGTPNFjA7lzD0Y
+    skip_symbols: true
+    on:
+      branch: dev
+
+#---------------------------------#
+#  Skip builds for doc changes    #
+#---------------------------------#
+skip_commits:
+  # Regex for matching commit message
+  message: /docs.*/

@@ -9,7 +9,6 @@ namespace IdentityServer4.Models.ViewModels
         public UsersDto(Users users)
         {
             Username = users.Username;
-            Password = users.Password;
             Name = users.Name;
             GivenName = users.GivenName;
             FamilyName = users.FamilyName;

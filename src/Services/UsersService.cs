@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.Data;
@@ -15,7 +18,10 @@ namespace IdentityServer4.Serivces
     public class UsersService : IUsersService
     {
         private readonly IDbContext _dbContext;
-
+        static readonly string PasswordHash = "P@@Sw0rd";
+        static readonly string SaltKey = "S@LT&KEY";
+        static readonly string VIKey = "@1B2c3D4e5F6g7H8";
+        bool isDecrypt = false; 
         public UsersService(IDbContext dbContext)
         {
             _dbContext = dbContext;
@@ -64,11 +70,51 @@ namespace IdentityServer4.Serivces
             return user;
 
         }
+        public string Encrypt(string plainText)
+        {
+            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
 
+            byte[] keyBytes = new Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
+            var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.Zeros };
+            var encryptor = symmetricKey.CreateEncryptor(keyBytes, Encoding.ASCII.GetBytes(VIKey));
+
+            byte[] cipherTextBytes;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+                {
+                    cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
+                    cryptoStream.FlushFinalBlock();
+                    cipherTextBytes = memoryStream.ToArray();
+                    cryptoStream.Close();
+                }
+                memoryStream.Close();
+            }
+            return Convert.ToBase64String(cipherTextBytes);
+        }
+        public string Decrypt(string encryptedText)
+        {
+            byte[] cipherTextBytes = Convert.FromBase64String(encryptedText);
+            byte[] keyBytes = new Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
+            var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.None };
+
+            var decryptor = symmetricKey.CreateDecryptor(keyBytes, Encoding.ASCII.GetBytes(VIKey));
+            var memoryStream = new MemoryStream(cipherTextBytes);
+            var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+            byte[] plainTextBytes = new byte[cipherTextBytes.Length];
+
+            int decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
+            memoryStream.Close();
+            cryptoStream.Close();
+            isDecrypt = true;
+            return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount).TrimEnd("\0".ToCharArray());
+        }
         public async Task<TestUser> FindByUsername(string username)
         {
             var getUserByusername = await GetByUsername(username);
-            if(getUserByusername != null)
+          
+            if (getUserByusername != null)
             {
                 var user = new TestUser
                 {
@@ -95,7 +141,16 @@ namespace IdentityServer4.Serivces
         public async Task<Users> GetById(Guid id)
         {
             await Task.Yield();
-            return _dbContext.Set<Users>().Where(o => o.Id == id).FirstOrDefault();
+            var user =  _dbContext.Set<Users>().Where(o => o.Id == id).FirstOrDefault();
+            if(user != null)
+            {
+                if(isDecrypt == false)
+                {
+                    var password = this.Decrypt(user.Password);
+                    user.Password = password;
+                }
+            }
+            return user;
         }
 
         public async Task<UsersDto> GetByIdUserTest(string id)
@@ -105,6 +160,11 @@ namespace IdentityServer4.Serivces
             var getUserById =_dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
             if (getUserById != null)
             {
+                if(isDecrypt == false)
+                {
+                    var password = this.Decrypt(getUserById.Password);
+                    getUserById.Password = password;
+                }
                 var user = new UsersDto(getUserById);
 
                 return user;
@@ -114,7 +174,15 @@ namespace IdentityServer4.Serivces
         public async Task<Users> GetByUsername(string username)
         {
             await Task.Yield();
-            return _dbContext.Set<Users>().Where(o => o.Username == username).FirstOrDefault();
+            var user =  _dbContext.Set<Users>().Where(o => o.Username == username).FirstOrDefault();
+            if (user != null)
+            {
+                if(isDecrypt == false) {
+                    var password = this.Decrypt(user.Password);
+                    user.Password = password;
+                }
+            }
+            return user;
         }
 
         public Task<IQueryable<Users>> GetUsers()
@@ -126,14 +194,14 @@ namespace IdentityServer4.Serivces
         {
             try
             {
-
+                var password = this.Encrypt(userForm.Password);
                 var user = new Users(Guid.NewGuid())
                 {
                     CreatedBy = "admin",
                     CreatedDate = DateTimeOffset.Now,
                     IsActive = true,
                     Username = userForm.Username,
-                    Password = userForm.Password,
+                    Password = password,
                     Name = userForm.Name,
                     GivenName = userForm.GivenName,
                     FamilyName = userForm.FamilyName,
@@ -164,10 +232,12 @@ namespace IdentityServer4.Serivces
             var guid = new Guid(id);
             var getUser = _dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
 
+            var password = this.Encrypt(userForm.Password);
+
             getUser.ModifiedBy = "admin";
             getUser.ModifiedDate = DateTimeOffset.Now;
             getUser.Username = userForm.Username;
-            getUser.Password = userForm.Password;
+            getUser.Password = password;
             getUser.Name = userForm.Name;
             getUser.GivenName = userForm.GivenName;
             getUser.FamilyName = userForm.FamilyName;

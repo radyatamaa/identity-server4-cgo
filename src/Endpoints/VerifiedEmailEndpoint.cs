@@ -20,7 +20,7 @@ using SendGrid.Helpers.Mail;
 
 namespace IdentityServer4.Endpoints
 {
-    internal class RegisterEndpoint : IEndpointHandler
+    internal class VerifiedEmailEndpoint : IEndpointHandler
     {
         private readonly IUsersService _usersService;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
@@ -35,7 +35,7 @@ namespace IdentityServer4.Endpoints
         /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="logger">The logger.</param>
-        public RegisterEndpoint(
+        public VerifiedEmailEndpoint(
             BearerTokenUsageValidator tokenUsageValidator,
             IUserInfoRequestValidator requestValidator,
             IUserInfoResponseGenerator responseGenerator,
@@ -62,11 +62,11 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            return await ProcessRegisterRequestAsync(context);
+            return await ProcessVerifiedEmailRequestAsync(context);
         }
 
 
-        private async Task<IEndpointResult> ProcessRegisterRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessVerifiedEmailRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Start register request");
             string users;
@@ -76,16 +76,20 @@ namespace IdentityServer4.Endpoints
 
                 // Do something else
             }
+            try
+            {
+                var userForm = JsonConvert.DeserializeObject<VerifiedOTP>(users);
 
-            Random generator = new Random();
-            String otpCode = generator.Next(0, 999999).ToString("D6");
-            
-            var userForm = JsonConvert.DeserializeObject<UsersForm>(users);
-            var response = await _usersService.Insert(userForm,otpCode);
+                var response = await _usersService.VerifiedEmail(userForm);
 
 
-            _logger.LogDebug("End register request");
-            return new RegisterResult(response);
+                _logger.LogDebug("End register request");
+                return new UserInfoResult(response);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         private IEndpointResult Error(string error, string description = null)

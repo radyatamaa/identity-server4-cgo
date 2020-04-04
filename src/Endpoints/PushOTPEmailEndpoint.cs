@@ -20,7 +20,7 @@ using SendGrid.Helpers.Mail;
 
 namespace IdentityServer4.Endpoints
 {
-    internal class RegisterEndpoint : IEndpointHandler
+    internal class PushOTPEmailEndpoint : IEndpointHandler
     {
         private readonly IUsersService _usersService;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
@@ -35,7 +35,7 @@ namespace IdentityServer4.Endpoints
         /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="logger">The logger.</param>
-        public RegisterEndpoint(
+        public PushOTPEmailEndpoint(
             BearerTokenUsageValidator tokenUsageValidator,
             IUserInfoRequestValidator requestValidator,
             IUserInfoResponseGenerator responseGenerator,
@@ -62,11 +62,11 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            return await ProcessRegisterRequestAsync(context);
+            return await ProcessPushToEmailRequestAsync(context);
         }
 
 
-        private async Task<IEndpointResult> ProcessRegisterRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessPushToEmailRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Start register request");
             string users;
@@ -77,15 +77,22 @@ namespace IdentityServer4.Endpoints
                 // Do something else
             }
 
-            Random generator = new Random();
-            String otpCode = generator.Next(0, 999999).ToString("D6");
-            
-            var userForm = JsonConvert.DeserializeObject<UsersForm>(users);
-            var response = await _usersService.Insert(userForm,otpCode);
+            var message = JsonConvert.DeserializeObject<MessageEmail>(users);
+
+            var apiKey = "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";
+            var client = new SendGridClient(apiKey);
+            var from = new EmailAddress(message.From, "CGO Indonesia");
+            var subject = message.Subject;
+            var to = new EmailAddress(message.To, "Example User");
+            var plainTextContent = message.Message;
+            var htmlContent = "<strong> " + message.Message + "</strong>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var respons = await client.SendEmailAsync(msg);
+
 
 
             _logger.LogDebug("End register request");
-            return new RegisterResult(response);
+            return new SendingEmailResult(message);
         }
 
         private IEndpointResult Error(string error, string description = null)

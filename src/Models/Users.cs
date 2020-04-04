@@ -1,4 +1,5 @@
 using IdentityServer4.Models.ViewModels;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,6 @@ namespace IdentityServer4.Models
         public bool EmailVerified { get; set; }
         public string WebSite { get; set; }
         public string Address { get; set; }
-
-
+        public string CurrentOTPCode { get; set; }
     }
 }

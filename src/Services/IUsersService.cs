@@ -11,11 +11,12 @@ namespace IdentityServer4.Serivces
 {
     public interface IUsersService
     {
+        Task<UsersDto> VerifiedEmail(VerifiedOTP verifiedOTP);
         Task<IQueryable<Users>> GetUsers();
         Task<UsersDto> GetByIdUserTest(string id);
         Task<Users> GetById(Guid id);
         Task<Users> GetByUsername(string username);
-        Task<UsersForm> Insert(UsersForm entity);
+        Task<UsersForm> Insert(UsersForm entity,string otpCode);
         Task Insert(IEnumerable<Users> entity);
         Task<UsersForm> Update(UsersForm entity,string id);
         Task Update(IEnumerable<Users> entities);

@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using IdentityServer4.Data;
 using IdentityServer4.Serivces;
 using IdentityServer4.Test;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -41,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
            
             services.AddDbContext<UMDbContext>
                  (options => options.UseMySql("server=api-blog-cgo-mysqldbserver.mysql.database.azure.com;port=3306;database=cgo_um;uid=AdminCgo@api-blog-cgo-mysqldbserver;password='Standar123.'"));
-
+           
             services.AddScoped<IDbContext>(c => c.GetService<UMDbContext>());
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IUMStore, UMStore>();

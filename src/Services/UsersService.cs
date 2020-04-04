@@ -190,7 +190,7 @@ namespace IdentityServer4.Serivces
             return Task.FromResult(_dbContext.Set<Users>().AsNoTracking());
         }
 
-        public async Task<UsersForm> Insert(UsersForm userForm)
+        public async Task<UsersForm> Insert(UsersForm userForm,string otpCode)
         {
             try
             {
@@ -208,7 +208,8 @@ namespace IdentityServer4.Serivces
                     Email = userForm.Email,
                     EmailVerified = userForm.EmailVerified,
                     WebSite = userForm.WebSite,
-                    Address = userForm.Address
+                    Address = userForm.Address,
+                    CurrentOTPCode = otpCode
                 };
 
                 var result = await _dbContext.Set<Users>().AddAsync(user);
@@ -266,6 +267,25 @@ namespace IdentityServer4.Serivces
             }
 
             return false;
+        }
+
+        public async Task<UsersDto> VerifiedEmail(VerifiedOTP verifiedOTP)
+        {
+            var user = _dbContext.Set<Users>().Where(o => o.Email == verifiedOTP.Email && o.CurrentOTPCode == verifiedOTP.CodeOTP).FirstOrDefault();
+            try
+            {
+
+                user.EmailVerified = true;
+
+                _dbContext.Set<Users>().Update(user);
+                await _dbContext.SaveChangesAsync();
+                var userDto = new UsersDto(user);
+                return userDto;
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
         }
     }
 }

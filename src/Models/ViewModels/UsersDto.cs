@@ -1,12 +1,24 @@
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace IdentityServer4.Models.ViewModels
 {
-    public class UsersDto
+    public class UsersDto : IdentityUser
     {
         public UsersDto(Users users)
+        {
+            Username = users.Username;
+            Name = users.Name;
+            GivenName = users.GivenName;
+            FamilyName = users.FamilyName;
+            Email = users.Email;
+            EmailVerified = users.EmailVerified;
+            WebSite = users.WebSite;
+            Address = users.Address;
+        }
+        public UsersDto(UsersForm users)
         {
             Username = users.Username;
             Name = users.Name;

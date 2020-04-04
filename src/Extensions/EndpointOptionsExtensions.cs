@@ -34,6 +34,10 @@ namespace IdentityServer4.Extensions
                     return options.EnableRegisterEndpoint;
                 case EndpointNames.UpdateUser:
                     return options.EnableUpdateUserEndpoint;
+                case EndpointNames.VerifiedEmail:
+                    return options.EnableVerifiedEmailEndpoint;
+                case EndpointNames.PushOTPEmail:
+                    return options.EnablePushOTPEmailEndpoint;
                 default:
                     // fall thru to true to allow custom endpoints
                     return true;

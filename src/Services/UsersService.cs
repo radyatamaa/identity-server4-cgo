@@ -215,6 +215,7 @@ namespace IdentityServer4.Serivces
                 var result = await _dbContext.Set<Users>().AddAsync(user);
                 await _dbContext.SaveChangesAsync();
                 userForm.Id = user.Id.ToString();
+                userForm.OTP = otpCode;
                 return userForm;
             }
             catch (Exception e)

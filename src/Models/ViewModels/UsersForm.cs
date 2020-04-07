@@ -17,5 +17,6 @@ namespace IdentityServer4.Models.ViewModels
         public string WebSite { get; set; }
         public string Address { get; set; }
         public string OTP { get; set; }
+        public UsersEnum UserType {get; set;}
     }
 }

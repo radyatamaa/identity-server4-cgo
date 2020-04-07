@@ -209,7 +209,8 @@ namespace IdentityServer4.Serivces
                     EmailVerified = userForm.EmailVerified,
                     WebSite = userForm.WebSite,
                     Address = userForm.Address,
-                    CurrentOTPCode = otpCode
+                    CurrentOTPCode = otpCode,
+                    UserType = (int)userForm.UserType
                 };
 
                 var result = await _dbContext.Set<Users>().AddAsync(user);

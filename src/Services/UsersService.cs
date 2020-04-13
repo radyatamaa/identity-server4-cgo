@@ -289,5 +289,42 @@ namespace IdentityServer4.Serivces
                 throw e;
             }
         }
+
+        public async Task<Users> GetByPhoneNumberOTP(string phoneNumber, string oTP)
+        {
+            await Task.Yield();
+            var now = DateTime.Now;
+            var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber && o.CurrentOTPCode == oTP  && o.ExpiredOTP >= now).FirstOrDefault();
+            if (user != null)
+            {
+                if (isDecrypt == false)
+                {
+                    var password = this.Decrypt(user.Password);
+                    user.Password = password;
+                }
+            }
+            return user;
+
+        }
+
+        public async Task<OTPResponse> GenerateOTP(string phoneNumber, string otp)
+        {
+            await Task.Yield();
+            var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber).FirstOrDefault();
+            if (user != null)
+            {
+                user.CurrentOTPCode = otp;
+                var expiredDate = DateTime.Now.AddMinutes(5);
+                user.ExpiredOTP = expiredDate;
+                _dbContext.Set<Users>().Update(user);
+                await _dbContext.SaveChangesAsync();
+            }
+            var otpResponse = new OTPResponse()
+            {
+                OTP = user.CurrentOTPCode,
+                ExpiredDate = user.ExpiredOTP.Value
+            };
+            return otpResponse;
+        }
     }
 }

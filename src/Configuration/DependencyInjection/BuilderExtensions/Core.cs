@@ -93,6 +93,8 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<RegisterEndpoint>(EndpointNames.Register, ProtocolRoutePaths.Register.EnsureLeadingSlash());
             builder.AddEndpoint<VerifiedEmailEndpoint>(EndpointNames.VerifiedEmail, ProtocolRoutePaths.VerifiedEmail.EnsureLeadingSlash());
             builder.AddEndpoint<PushOTPEmailEndpoint>(EndpointNames.PushOTPEmail, ProtocolRoutePaths.PushOTPEmail.EnsureLeadingSlash());
+            builder.AddEndpoint<PushSMSEndpoint>(EndpointNames.PushSMS, ProtocolRoutePaths.PushSMS.EnsureLeadingSlash());
+            builder.AddEndpoint<GenerateOTPEndpoint>(EndpointNames.RequestOTP, ProtocolRoutePaths.RequestOTP.EnsureLeadingSlash());
             builder.AddEndpoint<UpdateUserEndpoint>(EndpointNames.UpdateUser, ProtocolRoutePaths.UpdateUser.EnsureLeadingSlash());
 
             return builder;

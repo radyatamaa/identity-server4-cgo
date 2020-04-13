@@ -209,6 +209,8 @@ namespace IdentityServer4
             public const string UpdateUser = "UpdateUser";
             public const string VerifiedEmail = "VerifiedEmail";
             public const string PushOTPEmail = "PushOTPEmail";
+            public const string PushSMS = "PushSMS";
+            public const string RequestOTP = "RequestOTP";
         }
 
         public static class ProtocolRoutePaths
@@ -229,6 +231,8 @@ namespace IdentityServer4
             public const string UpdateUser             = "connect/update-user";
             public const string VerifiedEmail          = "connect/verified-email";
             public const string PushOTPEmail           = "connect/push-email";
+            public const string PushSMS                = "connect/push-sms";
+            public const string RequestOTP             = "connect/request-otp";
 
             public static readonly string[] CorsPaths =
             {

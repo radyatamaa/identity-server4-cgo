@@ -23,5 +23,7 @@ namespace IdentityServer4.Models
         public string Address { get; set; }
         public string CurrentOTPCode { get; set; }
         public int? UserType { get; set; }
+        public string PhoneNumber { get; set; }
+        public DateTime? ExpiredOTP { get; set; }
     }
 }

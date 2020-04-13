@@ -38,6 +38,10 @@ namespace IdentityServer4.Extensions
                     return options.EnableVerifiedEmailEndpoint;
                 case EndpointNames.PushOTPEmail:
                     return options.EnablePushOTPEmailEndpoint;
+                case EndpointNames.PushSMS:
+                    return options.EnablePushSMSEndpoint;
+                case EndpointNames.RequestOTP:
+                    return options.EnableGenerateOTPEndpoint;
                 default:
                     // fall thru to true to allow custom endpoints
                     return true;

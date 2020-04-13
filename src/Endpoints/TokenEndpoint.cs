@@ -8,6 +8,7 @@ using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Hosting;
 using IdentityServer4.ResponseHandling;
+using IdentityServer4.Serivces;
 using IdentityServer4.Services;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Http;
@@ -23,11 +24,13 @@ namespace IdentityServer4.Endpoints
     /// <seealso cref="IdentityServer4.Hosting.IEndpointHandler" />
     internal class TokenEndpoint : IEndpointHandler
     {
+        private readonly IUsersService _usersService;
         private readonly IClientSecretValidator _clientValidator;
         private readonly ITokenRequestValidator _requestValidator;
         private readonly ITokenResponseGenerator _responseGenerator;
         private readonly IEventService _events;
         private readonly ILogger _logger;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TokenEndpoint" /> class.
@@ -41,9 +44,11 @@ namespace IdentityServer4.Endpoints
             IClientSecretValidator clientValidator, 
             ITokenRequestValidator requestValidator, 
             ITokenResponseGenerator responseGenerator, 
-            IEventService events, 
+            IEventService events,
+            IUsersService usersService,
             ILogger<TokenEndpoint> logger)
         {
+            _usersService = usersService;
             _clientValidator = clientValidator;
             _requestValidator = requestValidator;
             _responseGenerator = responseGenerator;
@@ -73,7 +78,28 @@ namespace IdentityServer4.Endpoints
         private async Task<IEndpointResult> ProcessTokenRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Start token request.");
+            // validate request
+            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
+            var userName = form.Get(OidcConstants.TokenRequest.UserName);
+            var password = form.Get(OidcConstants.TokenRequest.Password);
+            var scope = form.Get(OidcConstants.TokenRequest.Scope);
 
+            if (scope == "phone_number")
+            {
+                var getUserByPhoneNumber = await _usersService.GetByPhoneNumberOTP(userName, password);
+                if (getUserByPhoneNumber != null)
+                {
+                    form.Remove("username");
+                    form.Remove("password");
+                    form.Remove("scope");
+                    form.Add("username", getUserByPhoneNumber.Username);
+                    form.Add("password", getUserByPhoneNumber.Password);
+                    form.Add("scope", "openid");
+
+                }
+
+
+            }
             // validate client
             var clientResult = await _clientValidator.ValidateAsync(context);
 
@@ -83,7 +109,7 @@ namespace IdentityServer4.Endpoints
             }
 
             // validate request
-            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
+            //var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             _logger.LogTrace("Calling into token request validator: {type}", _requestValidator.GetType().FullName);
             var requestResult = await _requestValidator.ValidateRequestAsync(form, clientResult);
 

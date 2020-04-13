@@ -39,6 +39,9 @@ namespace IdentityServer4.Configuration
         public bool EnableVerifiedEmailEndpoint { get; set; } = true;
 
         public bool EnablePushOTPEmailEndpoint { get; set; } = true;
+
+        public bool EnablePushSMSEndpoint { get; set; } = true;
+        public bool EnableGenerateOTPEndpoint { get; set; } = true;
         /// <summary>
         /// Gets or sets a value indicating whether the discovery document endpoint is enabled.
         /// </summary>

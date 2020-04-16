@@ -79,19 +79,13 @@ namespace IdentityServer4.Endpoints
 
             var message = JsonConvert.DeserializeObject<MessageEmail>(users);
 
-            var apiKey = "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";
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress(message.From, "CGO Indonesia");
-            var subject = message.Subject;
-            var to = new EmailAddress(message.To, "Example User");
-            var plainTextContent = message.Message;
-            var htmlContent = "<strong> " + message.Message + "</strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var respons = await client.SendEmailAsync(msg);
-
-
-
-            _logger.LogDebug("End register request");
+            var client = new SmtpClient("smtp.gmail.com", 587)
+            {
+                Credentials = new NetworkCredential("acgo280320@gmail.com", "Standar123."),
+                EnableSsl = true
+            };
+            client.Send("CGO Indonesia", message.To, message.Subject, message.Message);
+            
             return new SendingEmailResult(message);
         }
 

@@ -18,7 +18,7 @@ namespace IdentityServer4.Serivces
         Task<Users> GetByUsername(string username);
         Task<Users> GetByPhoneNumberOTP(string phoneNumber , string oTP);
         Task<UsersForm> Insert(UsersForm entity,string otpCode);
-        Task<OTPResponse> GenerateOTP(string phoneNumber,string otp);
+        Task<Users> GenerateOTP(string phoneNumber,string otp,DateTime expiredDate);
         Task Insert(IEnumerable<Users> entity);
         Task<UsersForm> Update(UsersForm entity,string id);
         Task Update(IEnumerable<Users> entities);

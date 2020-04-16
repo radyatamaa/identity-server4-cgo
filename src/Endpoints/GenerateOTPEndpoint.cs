@@ -75,12 +75,16 @@ namespace IdentityServer4.Endpoints
             var phoneNumber = form.Get("phone_number");
             Random generator = new Random();
             String otpCode = generator.Next(0, 999999).ToString("D6");
+            var expiredDate = DateTime.Now.AddMinutes(5);
+            var response = await _usersService.GenerateOTP(phoneNumber, otpCode,expiredDate);
 
-            var response = await _usersService.GenerateOTP(phoneNumber, otpCode);
-
-
+            var otpResponse = new OTPResponse()
+            {
+                OTP = otpCode,
+                ExpiredDate = expiredDate
+            };
             _logger.LogDebug("End register request");
-            return new GenerateOTPResult(response);
+            return new GenerateOTPResult(otpResponse);
 
 
         }

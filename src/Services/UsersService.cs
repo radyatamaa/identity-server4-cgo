@@ -307,24 +307,19 @@ namespace IdentityServer4.Serivces
 
         }
 
-        public async Task<OTPResponse> GenerateOTP(string phoneNumber, string otp)
+        public async Task<Users> GenerateOTP(string phoneNumber, string otp,DateTime expiredDate)
         {
             await Task.Yield();
             var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber).FirstOrDefault();
             if (user != null)
             {
                 user.CurrentOTPCode = otp;
-                var expiredDate = DateTime.Now.AddMinutes(5);
                 user.ExpiredOTP = expiredDate;
                 _dbContext.Set<Users>().Update(user);
                 await _dbContext.SaveChangesAsync();
             }
-            var otpResponse = new OTPResponse()
-            {
-                OTP = user.CurrentOTPCode,
-                ExpiredDate = user.ExpiredOTP.Value
-            };
-            return otpResponse;
+          
+            return user;
         }
     }
 }

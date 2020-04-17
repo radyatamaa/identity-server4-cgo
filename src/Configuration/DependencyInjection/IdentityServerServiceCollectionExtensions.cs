@@ -13,6 +13,7 @@ using IdentityServer4.Data;
 using IdentityServer4.Serivces;
 using IdentityServer4.Test;
 using Microsoft.AspNet.Identity.EntityFramework;
+using IdentityServer4.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -45,6 +46,7 @@ namespace Microsoft.Extensions.DependencyInjection
            
             services.AddScoped<IDbContext>(c => c.GetService<UMDbContext>());
             services.AddScoped<IUsersService, UsersService>();
+            services.AddScoped<IRolesService, RolesService>();
             services.AddScoped<IUMStore, UMStore>();
 
             builder

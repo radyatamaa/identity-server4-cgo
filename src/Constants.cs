@@ -211,6 +211,9 @@ namespace IdentityServer4
             public const string PushOTPEmail = "PushOTPEmail";
             public const string PushSMS = "PushSMS";
             public const string RequestOTP = "RequestOTP";
+            public const string CreateRoles = "CreateRoles";
+            public const string UpdateRoles = "UpdateRoles";
+            public const string GetListRoles = "GetListRoles";
         }
 
         public static class ProtocolRoutePaths
@@ -233,6 +236,9 @@ namespace IdentityServer4
             public const string PushOTPEmail           = "connect/push-email";
             public const string PushSMS                = "connect/push-sms";
             public const string RequestOTP             = "connect/request-otp";
+            public const string CreateRoles = "connect/create-roles";
+            public const string UpdateRoles = "connect/update-roles";
+            public const string GetListRoles = "connect/roles";
 
             public static readonly string[] CorsPaths =
             {

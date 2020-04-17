@@ -19,5 +19,6 @@ namespace IdentityServer4.Models.ViewModels
         public string OTP { get; set; }
         public UsersEnum UserType {get; set;}
         public string PhoneNumber { get; set; }
+        public List<string>UserRoles { get; set; }
     }
 }

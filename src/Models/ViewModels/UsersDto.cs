@@ -1,13 +1,14 @@
 using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace IdentityServer4.Models.ViewModels
 {
     public class UsersDto : IdentityUser
     {
-        public UsersDto(Users users)
+        public UsersDto(Users users,List<Roles> roles)
         {
             Username = users.Username;
             Name = users.Name;
@@ -17,6 +18,15 @@ namespace IdentityServer4.Models.ViewModels
             EmailVerified = users.EmailVerified;
             WebSite = users.WebSite;
             Address = users.Address;
+            PhoneNumber = users.PhoneNumber;
+            if (roles != null)
+            {
+                Roles = roles.Select(o => new UserRolesDto
+                {
+                    RoleId = o.Id.ToString(),
+                    RoleName = o.RoleName
+                }).ToList();
+            }
         }
         public UsersDto(UsersForm users)
         {
@@ -38,5 +48,7 @@ namespace IdentityServer4.Models.ViewModels
         public bool EmailVerified { get; set; }
         public string WebSite { get; set; }
         public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+        public List<UserRolesDto> Roles { get; set; }
     }
 }

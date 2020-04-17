@@ -42,6 +42,11 @@ namespace IdentityServer4.Configuration
 
         public bool EnablePushSMSEndpoint { get; set; } = true;
         public bool EnableGenerateOTPEndpoint { get; set; } = true;
+
+        public bool EnableCreateRolesEndpoint { get; set; } = true;
+
+        public bool EnableUpdateRolesEndpoint { get; set; } = true;
+        public bool EnableGetListEndpoint { get; set; } = true;
         /// <summary>
         /// Gets or sets a value indicating whether the discovery document endpoint is enabled.
         /// </summary>

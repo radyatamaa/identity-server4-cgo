@@ -42,6 +42,12 @@ namespace IdentityServer4.Extensions
                     return options.EnablePushSMSEndpoint;
                 case EndpointNames.RequestOTP:
                     return options.EnableGenerateOTPEndpoint;
+                case EndpointNames.CreateRoles:
+                    return options.EnableCreateRolesEndpoint;
+                case EndpointNames.UpdateRoles:
+                    return options.EnableUpdateRolesEndpoint;
+                case EndpointNames.GetListRoles:
+                    return options.EnableGetListEndpoint;
                 default:
                     // fall thru to true to allow custom endpoints
                     return true;

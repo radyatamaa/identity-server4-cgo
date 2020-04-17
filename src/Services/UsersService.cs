@@ -158,6 +158,7 @@ namespace IdentityServer4.Serivces
             await Task.Yield();
             var guid = new Guid(id);
             var getUserById =_dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
+            
             if (getUserById != null)
             {
                 if(isDecrypt == false)
@@ -165,7 +166,9 @@ namespace IdentityServer4.Serivces
                     var password = this.Decrypt(getUserById.Password);
                     getUserById.Password = password;
                 }
-                var user = new UsersDto(getUserById);
+                var userRole = _dbContext.Set<UserRoles>().Where(o => o.UserId == guid).ToList().Select(o => o.RoleId);
+                var role = _dbContext.Set<Roles>().Where(o => userRole.Contains(o.Id)).ToList();
+                var user = new UsersDto(getUserById,role);
 
                 return user;
             }
@@ -213,7 +216,19 @@ namespace IdentityServer4.Serivces
                     UserType = (int)userForm.UserType,
                     PhoneNumber = userForm.PhoneNumber
                 };
-
+                if(userForm.UserRoles.Count != 0)
+                {
+                    foreach(var role in userForm.UserRoles)
+                    {
+                        var userRole = new UserRoles()
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = user.Id,
+                            RoleId = new Guid(role)
+                        };
+                        await _dbContext.Set<UserRoles>().AddAsync(userRole);
+                    }
+                }
                 var result = await _dbContext.Set<Users>().AddAsync(user);
                 await _dbContext.SaveChangesAsync();
                 userForm.Id = user.Id.ToString();
@@ -251,6 +266,32 @@ namespace IdentityServer4.Serivces
             getUser.Address = userForm.Address;
 
             _dbContext.Set<Users>().Update(getUser);
+            if (userForm.UserRoles.Count != 0)
+            {
+                var delete = _dbContext.Set<UserRoles>().Where(o => o.UserId == getUser.Id).ToList();
+                if (delete.Count != 0)
+                {
+                    _dbContext.Set<UserRoles>().RemoveRange(delete);
+                }
+                
+                foreach (var role in userForm.UserRoles)
+                {
+                    var userRole = new UserRoles()
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = getUser.Id,
+                        RoleId = new Guid(role)
+                    };
+                    await _dbContext.Set<UserRoles>().AddAsync(userRole);
+                }
+            }else
+            {
+                var delete = _dbContext.Set<UserRoles>().Where(o => o.UserId == getUser.Id).ToList();
+                if (delete.Count != 0)
+                {
+                    _dbContext.Set<UserRoles>().RemoveRange(delete);
+                }
+            }
             await _dbContext.SaveChangesAsync();
             return userForm;
         }
@@ -282,7 +323,7 @@ namespace IdentityServer4.Serivces
 
                 _dbContext.Set<Users>().Update(user);
                 await _dbContext.SaveChangesAsync();
-                var userDto = new UsersDto(user);
+                var userDto = new UsersDto(user,null);
                 return userDto;
             }
             catch(Exception e)

@@ -21,6 +21,19 @@ namespace IdentityServer4.Data
 
                 // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
             });
+            modelBuilder.Entity<Roles>(etb =>
+            {
+                etb.HasKey(k => k.Id);
+
+                // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<UserRoles>(etb =>
+            {
+                etb.HasKey(k => k.Id);
+                etb.HasOne(c => c.Roles).WithMany().HasForeignKey(o => o.RoleId);
+                etb.HasOne(c => c.Users).WithMany().HasForeignKey(o => o.UserId);
+                // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
+            });
 
         }
     }

@@ -96,6 +96,9 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<PushSMSEndpoint>(EndpointNames.PushSMS, ProtocolRoutePaths.PushSMS.EnsureLeadingSlash());
             builder.AddEndpoint<GenerateOTPEndpoint>(EndpointNames.RequestOTP, ProtocolRoutePaths.RequestOTP.EnsureLeadingSlash());
             builder.AddEndpoint<UpdateUserEndpoint>(EndpointNames.UpdateUser, ProtocolRoutePaths.UpdateUser.EnsureLeadingSlash());
+            builder.AddEndpoint<CreateRolesEndpoint>(EndpointNames.CreateRoles, ProtocolRoutePaths.CreateRoles.EnsureLeadingSlash());
+            builder.AddEndpoint<UpdateRolesEndpoint>(EndpointNames.UpdateRoles, ProtocolRoutePaths.UpdateRoles.EnsureLeadingSlash());
+            builder.AddEndpoint<GetRolesEndpoint>(EndpointNames.GetListRoles, ProtocolRoutePaths.GetListRoles.EnsureLeadingSlash());
 
             return builder;
         }

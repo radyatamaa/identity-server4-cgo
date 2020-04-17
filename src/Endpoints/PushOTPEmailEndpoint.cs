@@ -84,7 +84,7 @@ namespace IdentityServer4.Endpoints
                 Credentials = new NetworkCredential("acgo280320@gmail.com", "Standar123."),
                 EnableSsl = true
             };
-            client.Send("CGO Indonesia", message.To, message.Subject, message.Message);
+            client.Send("acgo280320@gmail.com", message.To, message.Subject, message.Message);
             
             return new SendingEmailResult(message);
         }

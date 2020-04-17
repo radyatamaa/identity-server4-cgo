@@ -210,7 +210,8 @@ namespace IdentityServer4.Serivces
                     WebSite = userForm.WebSite,
                     Address = userForm.Address,
                     CurrentOTPCode = otpCode,
-                    UserType = (int)userForm.UserType
+                    UserType = (int)userForm.UserType,
+                    PhoneNumber = userForm.PhoneNumber
                 };
 
                 var result = await _dbContext.Set<Users>().AddAsync(user);

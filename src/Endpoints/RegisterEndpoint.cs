@@ -81,6 +81,7 @@ namespace IdentityServer4.Endpoints
             String otpCode = generator.Next(0, 999999).ToString("D6");
             
             var userForm = JsonConvert.DeserializeObject<UsersForm>(users);
+            //userForm.ExpiredOTP = DateTime.Now.AddMinutes(5);
             var response = await _usersService.Insert(userForm,otpCode);
 
 

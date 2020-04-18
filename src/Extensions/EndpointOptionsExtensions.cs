@@ -48,6 +48,8 @@ namespace IdentityServer4.Extensions
                     return options.EnableUpdateRolesEndpoint;
                 case EndpointNames.GetListRoles:
                     return options.EnableGetListEndpoint;
+                case EndpointNames.GetUserDetail:
+                    return options.EnableGetUserDetailEndpoint;
                 default:
                     // fall thru to true to allow custom endpoints
                     return true;

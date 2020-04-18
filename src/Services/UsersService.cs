@@ -363,5 +363,27 @@ namespace IdentityServer4.Serivces
           
             return user;
         }
+
+        public async Task<UsersDto> GetByDetail(string id)
+        {
+            await Task.Yield();
+            var guid = new Guid(id);
+            var getUserById = _dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
+
+            if (getUserById != null)
+            {
+                if (isDecrypt == false)
+                {
+                    var password = this.Decrypt(getUserById.Password);
+                    getUserById.Password = password;
+                }
+                var userRole = _dbContext.Set<UserRoles>().Where(o => o.UserId == guid).ToList().Select(o => o.RoleId);
+                var role = _dbContext.Set<Roles>().Where(o => userRole.Contains(o.Id)).ToList();
+                var user = new UsersDto(getUserById, role,true);
+
+                return user;
+            }
+            return null;
+        }
     }
 }

@@ -14,6 +14,7 @@ namespace IdentityServer4.Serivces
         Task<UsersDto> VerifiedEmail(VerifiedOTP verifiedOTP);
         Task<IQueryable<Users>> GetUsers();
         Task<UsersDto> GetByIdUserTest(string id);
+        Task<UsersDto> GetByDetail(string id);
         Task<Users> GetById(Guid id);
         Task<Users> GetByUsername(string username);
         Task<Users> GetByPhoneNumberOTP(string phoneNumber , string oTP);

@@ -99,6 +99,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<CreateRolesEndpoint>(EndpointNames.CreateRoles, ProtocolRoutePaths.CreateRoles.EnsureLeadingSlash());
             builder.AddEndpoint<UpdateRolesEndpoint>(EndpointNames.UpdateRoles, ProtocolRoutePaths.UpdateRoles.EnsureLeadingSlash());
             builder.AddEndpoint<GetRolesEndpoint>(EndpointNames.GetListRoles, ProtocolRoutePaths.GetListRoles.EnsureLeadingSlash());
+            builder.AddEndpoint<GetUserDetailByIdEndpoint>(EndpointNames.GetUserDetail, ProtocolRoutePaths.GetUserDetail.EnsureLeadingSlash());
 
             return builder;
         }

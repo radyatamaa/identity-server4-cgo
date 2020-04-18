@@ -47,6 +47,7 @@ namespace IdentityServer4.Configuration
 
         public bool EnableUpdateRolesEndpoint { get; set; } = true;
         public bool EnableGetListEndpoint { get; set; } = true;
+        public bool EnableGetUserDetailEndpoint { get; set; } = true;
         /// <summary>
         /// Gets or sets a value indicating whether the discovery document endpoint is enabled.
         /// </summary>

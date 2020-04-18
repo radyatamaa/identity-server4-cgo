@@ -28,6 +28,27 @@ namespace IdentityServer4.Models.ViewModels
                 }).ToList();
             }
         }
+        public UsersDto(Users users, List<Roles> roles,bool isDetail)
+        {
+            Username = users.Username;
+            Password = users.Password;
+            Name = users.Name;
+            GivenName = users.GivenName;
+            FamilyName = users.FamilyName;
+            Email = users.Email;
+            EmailVerified = users.EmailVerified;
+            WebSite = users.WebSite;
+            Address = users.Address;
+            PhoneNumber = users.PhoneNumber;
+            if (roles != null)
+            {
+                Roles = roles.Select(o => new UserRolesDto
+                {
+                    RoleId = o.Id.ToString(),
+                    RoleName = o.RoleName
+                }).ToList();
+            }
+        }
         public UsersDto(UsersForm users)
         {
             Username = users.Username;

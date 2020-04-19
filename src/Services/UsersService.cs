@@ -321,18 +321,20 @@ namespace IdentityServer4.Serivces
             return false;
         }
 
-        public async Task<UsersDto> VerifiedEmail(VerifiedOTP verifiedOTP)
+        public async Task<bool> VerifiedEmail(VerifiedOTP verifiedOTP)
         {
-            var user = _dbContext.Set<Users>().Where(o => o.Email == verifiedOTP.Email && o.CurrentOTPCode == verifiedOTP.CodeOTP).FirstOrDefault();
+            var now = DateTime.Now;
+            var user = _dbContext.Set<OTPTemp>().Where(o => o.Email == verifiedOTP.Email && o.OTP == verifiedOTP.CodeOTP && o.Expired >= now).FirstOrDefault();
             try
             {
+                if (user != null) {
 
-                user.EmailVerified = true;
-
-                _dbContext.Set<Users>().Update(user);
-                await _dbContext.SaveChangesAsync();
-                var userDto = new UsersDto(user,null);
-                return userDto;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch(Exception e)
             {
@@ -359,7 +361,7 @@ namespace IdentityServer4.Serivces
 
         public async Task<Users> GenerateOTP(string phoneNumber, string otp,DateTime expiredDate)
         {
-            await Task.Yield();
+            //await Task.Yield();
             var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber).FirstOrDefault();
             if (user != null)
             {
@@ -392,6 +394,21 @@ namespace IdentityServer4.Serivces
                 return user;
             }
             return null;
+        }
+
+        public async Task<OTPTemp> GenerateOTPTemp(string phoneNumber, string email,string otp, DateTime expiredDate)
+        {
+            var otpTemp = new OTPTemp()
+            {
+                Id = Guid.NewGuid(),
+                PhoneNumber = phoneNumber,
+                Email = email,
+                OTP = otp,
+                Expired = expiredDate
+            };
+            _dbContext.Set<OTPTemp>().Add(otpTemp);
+            await _dbContext.SaveChangesAsync();
+            return otpTemp;
         }
     }
 }

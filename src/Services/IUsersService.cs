@@ -11,7 +11,7 @@ namespace IdentityServer4.Serivces
 {
     public interface IUsersService
     {
-        Task<UsersDto> VerifiedEmail(VerifiedOTP verifiedOTP);
+        Task<bool> VerifiedEmail(VerifiedOTP verifiedOTP);
         Task<IQueryable<Users>> GetUsers();
         Task<UsersDto> GetByIdUserTest(string id);
         Task<UsersDto> GetByDetail(string id);
@@ -20,6 +20,7 @@ namespace IdentityServer4.Serivces
         Task<Users> GetByPhoneNumberOTP(string phoneNumber , string oTP);
         Task<UsersForm> Insert(UsersForm entity,string otpCode);
         Task<Users> GenerateOTP(string phoneNumber,string otp,DateTime expiredDate);
+        Task<OTPTemp> GenerateOTPTemp(string phoneNumber, string email, string otp, DateTime expiredDate);
         Task Insert(IEnumerable<Users> entity);
         Task<UsersForm> Update(UsersForm entity,string id);
         Task Update(IEnumerable<Users> entities);

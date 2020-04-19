@@ -50,6 +50,8 @@ namespace IdentityServer4.Extensions
                     return options.EnableGetListEndpoint;
                 case EndpointNames.GetUserDetail:
                     return options.EnableGetUserDetailEndpoint;
+                case EndpointNames.RequestOTPTemp:
+                    return options.EnableGenerateOTPTempEndpoint;
                 default:
                     // fall thru to true to allow custom endpoints
                     return true;

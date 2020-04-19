@@ -34,7 +34,12 @@ namespace IdentityServer4.Data
                 etb.HasOne(c => c.Users).WithMany().HasForeignKey(o => o.UserId);
                 // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
             });
+            modelBuilder.Entity<OTPTemp>(etb =>
+            {
+                etb.HasKey(k => k.Id);
 
+                // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

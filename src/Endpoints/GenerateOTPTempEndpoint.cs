@@ -17,10 +17,11 @@ using Microsoft.AspNet.Identity;
 using System.Net.Mail;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using System.Linq;
 
 namespace IdentityServer4.Endpoints
 {
-    internal class VerifiedEmailEndpoint : IEndpointHandler
+    internal class GenerateOTPTempEndpoint : IEndpointHandler
     {
         private readonly IUsersService _usersService;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
@@ -35,7 +36,7 @@ namespace IdentityServer4.Endpoints
         /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="logger">The logger.</param>
-        public VerifiedEmailEndpoint(
+        public GenerateOTPTempEndpoint(
             BearerTokenUsageValidator tokenUsageValidator,
             IUserInfoRequestValidator requestValidator,
             IUserInfoResponseGenerator responseGenerator,
@@ -62,33 +63,31 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            return await ProcessVerifiedEmailRequestAsync(context);
+            return await ProcessGenerateOTPRequestAsync(context);
         }
 
 
-        private async Task<IEndpointResult> ProcessVerifiedEmailRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessGenerateOTPRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Start register request");
-            string users;
-            using (var reader = new StreamReader(context.Request.Body))
-            {
-                users = reader.ReadToEnd();
 
-                // Do something else
-            }
-            try
-            {
-                var userForm = JsonConvert.DeserializeObject<VerifiedOTP>(users);
+            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
+            var email = form.Get("email");
+            var phoneNumber = form.Get("phone_number");
+            Random generator = new Random();
+            String otpCode = generator.Next(0, 999999).ToString("D6");
+            var expiredDate = DateTime.Now.AddMinutes(5);
+            var response = await _usersService.GenerateOTPTemp(phoneNumber,email, otpCode, expiredDate);
 
-                var response = await _usersService.VerifiedEmail(userForm);
-
-                _logger.LogDebug("End register request");
-                return new VerifiedEmailResult(response);
-            }
-            catch (Exception e)
+            var otpResponse = new OTPResponse()
             {
-                throw e;
-            }
+                OTP = otpCode,
+                ExpiredDate = expiredDate
+            };
+            _logger.LogDebug("End register request");
+            return new GenerateOTPResult(otpResponse);
+
+
         }
 
         private IEndpointResult Error(string error, string description = null)

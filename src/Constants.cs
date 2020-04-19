@@ -215,6 +215,7 @@ namespace IdentityServer4
             public const string UpdateRoles = "UpdateRoles";
             public const string GetListRoles = "GetListRoles";
             public const string GetUserDetail = "GetUserDetail";
+            public const string RequestOTPTemp = "RequestOTPTemp";
         }
 
         public static class ProtocolRoutePaths
@@ -241,6 +242,7 @@ namespace IdentityServer4
             public const string UpdateRoles = "connect/update-roles";
             public const string GetListRoles = "connect/roles";
             public const string GetUserDetail = "connect/user-detail";
+            public const string RequestOTPTemp = "connect/request-otp-temp";
 
             public static readonly string[] CorsPaths =
             {

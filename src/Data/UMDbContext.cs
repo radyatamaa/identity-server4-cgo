@@ -40,6 +40,19 @@ namespace IdentityServer4.Data
 
                 // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
             });
+            modelBuilder.Entity<PermissionRecord>(etb =>
+            {
+                etb.HasKey(k => k.Id);
+
+                // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
+            });
+            modelBuilder.Entity<PermissionRoleMapping>(etb =>
+            {
+                etb.HasKey(k => k.Id);
+                etb.HasOne(c => c.Roles).WithMany().HasForeignKey(o => o.RoleId);
+                etb.HasOne(c => c.Permission).WithMany().HasForeignKey(o => o.PermissionId);
+                // etb.HasMany(o => o.Addresses).WithOne(f => f.Customer).OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 }

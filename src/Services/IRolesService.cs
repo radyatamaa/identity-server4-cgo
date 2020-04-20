@@ -8,7 +8,7 @@ namespace IdentityServer4.Services
 {
     public interface IRolesService
     {
-        Task<List<RolesForm>> GetRolesByType(int roleType);
+        Task<List<RolesDto>> GetRolesByType(int roleType);
         Task<RolesForm> Insert(RolesForm rolesForm);
         Task<RolesForm> Update(RolesForm rolesForm);
 

@@ -175,7 +175,21 @@ namespace IdentityServer4.Serivces
                     getUserById.Password = password;
                 }
                 var userRole = _dbContext.Set<UserRoles>().Where(o => o.UserId == guid).ToList().Select(o => o.RoleId);
-                var role = _dbContext.Set<Roles>().Where(o => userRole.Contains(o.Id)).ToList();
+                var role = _dbContext.Set<Roles>().Where(o => userRole.Contains(o.Id))
+                    .ToList()
+                    .Select(o => new RolesDto(o,new List<PermissionRecord>())).ToList();
+
+                role.ForEach(o =>
+                {
+                    var queryPermissionRolesIds =
+                    _dbContext.Set<PermissionRoleMapping>()
+                    .Where(c => c.RoleId == new Guid(o.Id)).Select(c => c.PermissionId);
+
+                    var permissions = _dbContext.Set<PermissionRecord>()
+                    .Where(c => queryPermissionRolesIds.Contains(c.Id)).ToList();
+
+                    o.Permissions = permissions;
+                });
                 var user = new UsersDto(getUserById,role);
 
                 return user;
@@ -388,7 +402,22 @@ namespace IdentityServer4.Serivces
                     getUserById.Password = password;
                 }
                 var userRole = _dbContext.Set<UserRoles>().Where(o => o.UserId == guid).ToList().Select(o => o.RoleId);
-                var role = _dbContext.Set<Roles>().Where(o => userRole.Contains(o.Id)).ToList();
+                var role = _dbContext.Set<Roles>().Where(o => userRole.Contains(o.Id))
+                    .ToList()
+                    .Select(o => new RolesDto(o, new List<PermissionRecord>())).ToList();
+
+                role.ForEach(o =>
+                {
+                    var queryPermissionRolesIds =
+                    _dbContext.Set<PermissionRoleMapping>()
+                    .Where(c => c.RoleId == new Guid(o.Id)).Select(c => c.PermissionId);
+
+                    var permissions = _dbContext.Set<PermissionRecord>()
+                    .Where(c => queryPermissionRolesIds.Contains(c.Id)).ToList();
+
+                    o.Permissions = permissions;
+                });
+
                 var user = new UsersDto(getUserById, role,true);
 
                 return user;

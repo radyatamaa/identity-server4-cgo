@@ -8,7 +8,7 @@ namespace IdentityServer4.Models.ViewModels
 {
     public class UsersDto : IdentityUser
     {
-        public UsersDto(Users users,List<Roles> roles)
+        public UsersDto(Users users,List<RolesDto> roles)
         {
             Username = users.Username;
             Name = users.Name;
@@ -21,14 +21,13 @@ namespace IdentityServer4.Models.ViewModels
             PhoneNumber = users.PhoneNumber;
             if (roles != null)
             {
-                Roles = roles.Select(o => new UserRolesDto
+                if (roles != null)
                 {
-                    RoleId = o.Id.ToString(),
-                    RoleName = o.RoleName
-                }).ToList();
+                    Roles = roles;
+                }
             }
         }
-        public UsersDto(Users users, List<Roles> roles,bool isDetail)
+        public UsersDto(Users users, List<RolesDto> roles,bool isDetail)
         {
             Username = users.Username;
             Password = users.Password;
@@ -42,11 +41,7 @@ namespace IdentityServer4.Models.ViewModels
             PhoneNumber = users.PhoneNumber;
             if (roles != null)
             {
-                Roles = roles.Select(o => new UserRolesDto
-                {
-                    RoleId = o.Id.ToString(),
-                    RoleName = o.RoleName
-                }).ToList();
+                Roles = roles;
             }
         }
         public UsersDto(UsersForm users)
@@ -70,6 +65,6 @@ namespace IdentityServer4.Models.ViewModels
         public string WebSite { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public List<UserRolesDto> Roles { get; set; }
+        public List<RolesDto> Roles { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace IdentityServer4.Models
 
         }
         public string RoleName { get; set; }
+        public string Description { get; set; }
         public int? RoleType { get; set; }
     }
 }

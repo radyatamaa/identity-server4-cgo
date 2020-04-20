@@ -3,14 +3,16 @@ using System;
 using IdentityServer4.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace IdentityServer4.Migrations
 {
     [DbContext(typeof(UMDbContext))]
-    partial class UMDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200420172853_add-table-permission-record")]
+    partial class addtablepermissionrecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

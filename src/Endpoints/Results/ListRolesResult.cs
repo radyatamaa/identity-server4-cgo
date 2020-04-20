@@ -11,9 +11,9 @@ namespace IdentityServer4.Endpoints.Results
 {
     internal class ListRolesResult : IEndpointResult
     {
-        public List<RolesForm> Users;
+        public List<RolesDto> Users;
 
-        public ListRolesResult(List<RolesForm> users)
+        public ListRolesResult(List<RolesDto> users)
         {
             Users = users;
         }

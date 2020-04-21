@@ -52,6 +52,8 @@ namespace IdentityServer4.Extensions
                     return options.EnableGetUserDetailEndpoint;
                 case EndpointNames.RequestOTPTemp:
                     return options.EnableGenerateOTPTempEndpoint;
+                case EndpointNames.DeleteUsers:
+                    return options.EnableDeleteUsersEndpoint;
                 default:
                     // fall thru to true to allow custom endpoints
                     return true;

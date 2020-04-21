@@ -101,6 +101,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.AddEndpoint<GetRolesEndpoint>(EndpointNames.GetListRoles, ProtocolRoutePaths.GetListRoles.EnsureLeadingSlash());
             builder.AddEndpoint<GetUserDetailByIdEndpoint>(EndpointNames.GetUserDetail, ProtocolRoutePaths.GetUserDetail.EnsureLeadingSlash());
             builder.AddEndpoint<GenerateOTPTempEndpoint>(EndpointNames.RequestOTPTemp, ProtocolRoutePaths.RequestOTPTemp.EnsureLeadingSlash());
+            builder.AddEndpoint<DeleteUserEndpoint>(EndpointNames.DeleteUsers, ProtocolRoutePaths.DeleteUsers.EnsureLeadingSlash());
 
             return builder;
         }

@@ -14,7 +14,7 @@ namespace IdentityServer4.Serivces
         Task<bool> VerifiedEmail(VerifiedOTP verifiedOTP);
         Task<IQueryable<Users>> GetUsers();
         Task<UsersDto> GetByIdUserTest(string id);
-        Task<UsersDto> GetByDetail(string id);
+        Task<UsersDto> GetByDetail(string id,bool isDetail);
         Task<Users> GetById(Guid id);
         Task<Users> GetByUsername(string username);
         Task<Users> GetByPhoneNumberOTP(string phoneNumber , string oTP);
@@ -24,7 +24,7 @@ namespace IdentityServer4.Serivces
         Task Insert(IEnumerable<Users> entity);
         Task<UsersForm> Update(UsersForm entity,string id);
         Task Update(IEnumerable<Users> entities);
-        Task Delete(Users entity);
+        Task Delete(string id);
         Task<bool> ValidateCredentials(string username, string password);
         Task<TestUser> FindBySubjectId(string subjectId);
         Task<TestUser> FindByUsername(string username);

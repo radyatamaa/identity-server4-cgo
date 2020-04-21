@@ -55,6 +55,9 @@ namespace IdentityServer4.Models.ViewModels
             WebSite = users.WebSite;
             Address = users.Address;
         }
+        public UsersDto()
+        {
+        }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Name { get; set; }

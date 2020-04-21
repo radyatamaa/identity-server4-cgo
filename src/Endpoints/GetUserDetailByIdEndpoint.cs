@@ -14,6 +14,7 @@ using System.Net;
 using Newtonsoft.Json;
 using System;
 using IdentityServer4.Serivces;
+using IdentityServer4.Models.ViewModels;
 
 namespace IdentityServer4.Endpoints
 {
@@ -100,7 +101,16 @@ namespace IdentityServer4.Endpoints
             serelizeArrayId = serelizeArrayId.Replace("\"", "");
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             var userID = form.Get("id");
-            var respon = await _usersService.GetByDetail(userID);
+            var isDetail = form.Get("isDetail");
+            var respon = new UsersDto();
+            if (isDetail != null && isDetail != "")
+            {
+                respon = await _usersService.GetByDetail(userID,true);
+            }
+            else
+            {
+                respon = await _usersService.GetByDetail(userID, false);
+            }
             _logger.LogDebug("End userinfo request");
             return new UserInfoResult(respon);
         }

@@ -32,14 +32,16 @@ namespace IdentityServer4.Serivces
             throw new NotImplementedException();
         }
 
-        public async Task Delete(Users entity)
+        public async Task Delete(string id)
         {
-            var check = GetById(entity.Id).Result;
+            var userId = new Guid(id);
+            var check = _dbContext.Set<Users>().Where(o => o.Id == userId).FirstOrDefault();
             check.IsDeleted = true;
             check.DeletedDate = DateTime.Now;
-            check.DeleteBy = "System";
+            check.DeleteBy = "Admin";
             check.IsActive = false;
-            //await Update(check);
+            _dbContext.Set<Users>().Update(check);
+            await _dbContext.SaveChangesAsync();
         }
 
         public TestUser FindByExternalProvider(string provider, string userId)
@@ -149,7 +151,7 @@ namespace IdentityServer4.Serivces
         public async Task<Users> GetById(Guid id)
         {
             await Task.Yield();
-            var user =  _dbContext.Set<Users>().Where(o => o.Id == id).FirstOrDefault();
+            var user =  _dbContext.Set<Users>().Where(o => o.Id == id && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
             if(user != null)
             {
                 if(isDecrypt == false)
@@ -165,7 +167,7 @@ namespace IdentityServer4.Serivces
         {
             await Task.Yield();
             var guid = new Guid(id);
-            var getUserById =_dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
+            var getUserById =_dbContext.Set<Users>().Where(o => o.Id == guid && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
             
             if (getUserById != null)
             {
@@ -199,7 +201,7 @@ namespace IdentityServer4.Serivces
         public async Task<Users> GetByUsername(string username)
         {
             await Task.Yield();
-            var user =  _dbContext.Set<Users>().Where(o => o.Username == username).FirstOrDefault();
+            var user =  _dbContext.Set<Users>().Where(o => o.Username == username && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
             if (user != null)
             {
                 if(isDecrypt == false) {
@@ -271,7 +273,7 @@ namespace IdentityServer4.Serivces
         public async Task<UsersForm> Update(UsersForm userForm,string id)
         {
             var guid = new Guid(id);
-            var getUser = _dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
+            var getUser = _dbContext.Set<Users>().Where(o => o.Id == guid && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
 
             var password = this.Encrypt(userForm.Password);
 
@@ -360,7 +362,7 @@ namespace IdentityServer4.Serivces
         {
             await Task.Yield();
             var now = DateTime.Now;
-            var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber && o.CurrentOTPCode == oTP  && o.ExpiredOTP >= now).FirstOrDefault();
+            var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber && o.CurrentOTPCode == oTP  && o.ExpiredOTP >= now && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
             if (user != null)
             {
                 if (isDecrypt == false)
@@ -376,7 +378,7 @@ namespace IdentityServer4.Serivces
         public async Task<Users> GenerateOTP(string phoneNumber, string otp,DateTime expiredDate)
         {
             //await Task.Yield();
-            var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber).FirstOrDefault();
+            var user = _dbContext.Set<Users>().Where(o => o.PhoneNumber == phoneNumber && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
             if (user != null)
             {
                 user.CurrentOTPCode = otp;
@@ -388,11 +390,11 @@ namespace IdentityServer4.Serivces
             return user;
         }
 
-        public async Task<UsersDto> GetByDetail(string id)
+        public async Task<UsersDto> GetByDetail(string id,bool isDetail)
         {
             await Task.Yield();
             var guid = new Guid(id);
-            var getUserById = _dbContext.Set<Users>().Where(o => o.Id == guid).FirstOrDefault();
+            var getUserById = _dbContext.Set<Users>().Where(o => o.Id == guid && o.IsActive == true && o.IsDeleted == false).FirstOrDefault();
 
             if (getUserById != null)
             {
@@ -417,8 +419,15 @@ namespace IdentityServer4.Serivces
 
                     o.Permissions = permissions;
                 });
-
-                var user = new UsersDto(getUserById, role,true);
+                var user = new UsersDto();
+                if (isDetail == true)
+                {
+                    user = new UsersDto(getUserById, role, true);
+                }
+                else
+                {
+                    user = new UsersDto(getUserById, role);
+                }
 
                 return user;
             }

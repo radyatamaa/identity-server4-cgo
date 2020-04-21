@@ -24,4 +24,19 @@ namespace IdentityServer4.Endpoints.Results
             await context.Response.WriteJsonAsync(Users);
         }
     }
+    internal class DeleteUsersResult : IEndpointResult
+    {
+        public string Users;
+
+        public DeleteUsersResult(string users)
+        {
+            Users = users;
+        }
+
+        public async Task ExecuteAsync(HttpContext context)
+        {
+            context.Response.SetNoCache();
+            await context.Response.WriteJsonAsync(Users);
+        }
+    }
 }

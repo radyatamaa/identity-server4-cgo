@@ -13,16 +13,13 @@ using Newtonsoft.Json;
 using IdentityServer4.Models;
 using IdentityServer4.Models.ViewModels;
 using System;
-using Microsoft.AspNet.Identity;
-using System.Net.Mail;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using IdentityServer4.Services;
 
 namespace IdentityServer4.Endpoints
 {
-    internal class PushOTPEmailEndpoint : IEndpointHandler
+    internal class DeleteUserEndpoint : IEndpointHandler
     {
-        private readonly IUsersService _usersService;
+        private readonly IUsersService _userService;
         private readonly BearerTokenUsageValidator _tokenUsageValidator;
         private readonly IUserInfoRequestValidator _requestValidator;
         private readonly IUserInfoResponseGenerator _responseGenerator;
@@ -35,14 +32,14 @@ namespace IdentityServer4.Endpoints
         /// <param name="requestValidator">The request validator.</param>
         /// <param name="responseGenerator">The response generator.</param>
         /// <param name="logger">The logger.</param>
-        public PushOTPEmailEndpoint(
+        public DeleteUserEndpoint(
             BearerTokenUsageValidator tokenUsageValidator,
             IUserInfoRequestValidator requestValidator,
             IUserInfoResponseGenerator responseGenerator,
             ILogger<RegisterEndpoint> logger,
-            IUsersService usersService)
+            IUsersService UserService)
         {
-            _usersService = usersService;
+            _userService = UserService;
             _tokenUsageValidator = tokenUsageValidator;
             _requestValidator = requestValidator;
             _responseGenerator = responseGenerator;
@@ -62,48 +59,29 @@ namespace IdentityServer4.Endpoints
                 return new StatusCodeResult(HttpStatusCode.MethodNotAllowed);
             }
 
-            return await ProcessPushToEmailRequestAsync(context);
+            return await ProcessGetAllUserRequestAsync(context);
         }
 
 
-        private async Task<IEndpointResult> ProcessPushToEmailRequestAsync(HttpContext context)
+        private async Task<IEndpointResult> ProcessGetAllUserRequestAsync(HttpContext context)
         {
             _logger.LogDebug("Start register request");
-            string users;
-            using (var reader = new StreamReader(context.Request.Body))
+            var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
+            var id = form.Get("id");
+            try
             {
-                users = reader.ReadToEnd();
+                //var userForm = JsonConvert.DeserializeObject<UsersForm>(users);
 
-                // Do something else
+                await _userService.Delete(id);
+
+
+                _logger.LogDebug("End register request");
+                return new DeleteUsersResult(id);
             }
-
-            var message = JsonConvert.DeserializeObject<MessageEmail>(users);
-
-            var client = new SmtpClient("smtp.gmail.com", 587)
+            catch (Exception e)
             {
-                Credentials = new NetworkCredential("acgo280320@gmail.com", "Standar123."),
-                EnableSsl = true
-            };
-            var msg = new MailMessage("acgo280320@gmail.com", message.To, message.Subject, message.Message)
-            {
-                IsBodyHtml = true
-            };
-            if (message.FileName != "" && message.AttachmentFileUrl != "")
-            {
-                using (var cli = new WebClient())
-                {
-                    cli.DownloadFile(message.AttachmentFileUrl, message.FileName);
-                    
-                }
-
-                System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(message.FileName);
-                msg.Attachments.Add(attachment);
-
+                throw e;
             }
-            client.Send(msg);
-
-            //File.Delete("ticket.pdf");
-            return new SendingEmailResult(message);
         }
 
         private IEndpointResult Error(string error, string description = null)

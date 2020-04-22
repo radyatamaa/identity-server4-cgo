@@ -80,16 +80,17 @@ namespace IdentityServer4.Endpoints
 
                 {
                     //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-
-                    client.BaseAddress = new Uri("https://api.wavecell.com/sms/v1/");
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
-                    var content = new StringContent(smsRequest, Encoding.UTF8, "application/json");
-                    content.Headers.ContentType.CharSet = "";
-                    var result = client.PostAsync(accountId + "/single", content);
-                    string resultContent = result.Result.Content.ReadAsStringAsync().Result;
+                    var url = "https://api.twilio.com/2010-04-01/Accounts/AC4cdef007e463c9d7182820528e209542/Messages.json";
+                    var dict = new Dictionary<string, string>();
+                    dict.Add("To", message.Destination);
+                    dict.Add("From", "+12562570821");
+                    dict.Add("MessagingServiceSid", "MG0ec4bc5448a4386737c4e6b610aa8977");
+                    dict.Add("Body", message.Text);
+                    var req = new HttpRequestMessage(HttpMethod.Post, url) { Content = new FormUrlEncodedContent(dict) };
+                    req.Headers.Add("Authorization", "Basic QUM0Y2RlZjAwN2U0NjNjOWQ3MTgyODIwNTI4ZTIwOTU0Mjo2ZGE1YTEyY2MwN2JkZWUzNTdiMjU5ZWRkMDdjZjAxOA==");
+                    var res = await client.SendAsync(req);
                     //var respon = JsonSerializer.Deserialize<WSO2Response>(resultContent);
-                    Console.WriteLine(resultContent);
+                    //Console.WriteLine(resultContent);
                 }
             };
             return new SendingSMSResult(message);

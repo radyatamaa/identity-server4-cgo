@@ -15,8 +15,10 @@ using IdentityServer4.Models.ViewModels;
 using System;
 using Microsoft.AspNet.Identity;
 using System.Net.Mail;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace IdentityServer4.Endpoints
 {
@@ -88,20 +90,52 @@ namespace IdentityServer4.Endpoints
             {
                 IsBodyHtml = true
             };
+            string pathFile = "";
             if (message.FileName != "" && message.AttachmentFileUrl != "")
             {
-                using (var cli = new WebClient())
-                {
-                    cli.DownloadFile(message.AttachmentFileUrl, message.FileName);
-                    
-                }
+                StringReader sr = new StringReader(message.Message);
 
-                System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(message.FileName);
+                Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+
+                FileStream file;
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
+                    pdfDoc.Open();
+
+                    htmlparser.Parse(sr);
+                    pdfDoc.Close();
+
+                    byte[] bytes = memoryStream.ToArray();
+                    memoryStream.Close();
+                    using (var fs = new FileStream(message.FileName, FileMode.Create, FileAccess.Write))
+                    {
+                        fs.Write(bytes, 0, bytes.Length);
+                        file = fs;
+                    }
+                }
+                
+                System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(file.Name);
                 msg.Attachments.Add(attachment);
 
+                pathFile = file.Name;
+                file.Dispose();
             }
             client.Send(msg);
+            msg.Attachments.Dispose();
+            if (pathFile != "")
+            {
+                try
+                {
 
+                    File.Delete(pathFile);
+                }
+                catch(Exception e)
+                {
+                    throw e;
+                }
+            }
             //File.Delete("ticket.pdf");
             return new SendingEmailResult(message);
         }

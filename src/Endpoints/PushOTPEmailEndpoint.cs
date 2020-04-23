@@ -91,7 +91,7 @@ namespace IdentityServer4.Endpoints
                 IsBodyHtml = true
             };
             string pathFile = "";
-            if (message.FileName != "" && message.AttachmentFileUrl != "")
+            if (message.FileName != "")
             {
                 StringReader sr = new StringReader(message.Message);
 

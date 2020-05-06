@@ -14,6 +14,7 @@ using System.Net;
 using Newtonsoft.Json;
 using System;
 using IdentityServer4.Serivces;
+using System.Linq;
 
 namespace IdentityServer4.Endpoints
 {
@@ -93,7 +94,7 @@ namespace IdentityServer4.Endpoints
             // generate response
             _logger.LogTrace("Calling into userinfo response generator: {type}", _responseGenerator.GetType().FullName);
             var response = await _responseGenerator.ProcessAsync(validationResult);
-            var id = response.Values;
+            var id = response.Values.LastOrDefault();
             var serelizeArrayId = JsonConvert.SerializeObject(id);
             serelizeArrayId = serelizeArrayId.Replace("[", "");
             serelizeArrayId = serelizeArrayId.Replace("]", "");

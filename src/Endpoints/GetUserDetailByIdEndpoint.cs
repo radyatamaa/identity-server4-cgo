@@ -71,34 +71,6 @@ namespace IdentityServer4.Endpoints
         {
             _logger.LogDebug("Start userinfo request");
 
-            // userinfo requires an access token on the request
-            var tokenUsageResult = await _tokenUsageValidator.ValidateAsync(context);
-            if (tokenUsageResult.TokenFound == false)
-            {
-                var error = "No access token found.";
-
-                _logger.LogError(error);
-                return Error(OidcConstants.ProtectedResourceErrors.InvalidToken);
-            }
-
-            // validate the request
-            _logger.LogTrace("Calling into userinfo request validator: {type}", _requestValidator.GetType().FullName);
-            var validationResult = await _requestValidator.ValidateRequestAsync(tokenUsageResult.Token);
-
-            if (validationResult.IsError)
-            {
-                //_logger.LogError("Error validating  validationResult.Error);
-                return Error(validationResult.Error);
-            }
-
-            // generate response
-            _logger.LogTrace("Calling into userinfo response generator: {type}", _responseGenerator.GetType().FullName);
-            var response = await _responseGenerator.ProcessAsync(validationResult);
-            var id = response.Values;
-            var serelizeArrayId = JsonConvert.SerializeObject(id);
-            serelizeArrayId = serelizeArrayId.Replace("[", "");
-            serelizeArrayId = serelizeArrayId.Replace("]", "");
-            serelizeArrayId = serelizeArrayId.Replace("\"", "");
             var form = (await context.Request.ReadFormAsync()).AsNameValueCollection();
             var userID = form.Get("id");
             var isDetail = form.Get("isDetail");

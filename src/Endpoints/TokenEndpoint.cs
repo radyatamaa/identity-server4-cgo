@@ -91,10 +91,11 @@ namespace IdentityServer4.Endpoints
                 {
                     form.Remove("username");
                     form.Remove("password");
-                    form.Remove("scope");
+                    //form.Remove("scope");
                     form.Add("username", getUserByPhoneNumber.Username);
                     form.Add("password", getUserByPhoneNumber.Password);
-                    form.Add("scope", "openid");
+                    scope = null;
+                    //form.Add("scope", "openid");
 
                 }
 

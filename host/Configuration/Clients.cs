@@ -74,7 +74,7 @@ namespace Host.Configuration
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowOfflineAccess = true,
-                    AccessTokenLifetime = 86400,
+                    AccessTokenLifetime = 604800,
                     AllowedScopes = 
                     {
                         IdentityServerConstants.StandardScopes.OpenId,

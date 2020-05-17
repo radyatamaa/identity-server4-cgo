@@ -40,10 +40,15 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IIdentityServerBuilder AddIdentityServer(this IServiceCollection services)
         {
             var builder = services.AddIdentityServerBuilder();
-           
+
+            //dev
             services.AddDbContext<UMDbContext>
                  (options => options.UseMySql("server=api-blog-cgo-mysqldbserver.mysql.database.azure.com;port=3306;database=cgo_um;uid=AdminCgo@api-blog-cgo-mysqldbserver;password='Standar123.'"));
-           
+
+            //prd
+            //services.AddDbContext<UMDbContext>
+            //     (options => options.UseMySql("server=cgo-indonesia-prod.mysql.database.azure.com;port=3306;database=cgo_um;uid=admincgo@cgo-indonesia-prod;password='k_)V/p53u9z.V{C,'"));
+
             services.AddScoped<IDbContext>(c => c.GetService<UMDbContext>());
             services.AddScoped<IUsersService, UsersService>();
             services.AddScoped<IRolesService, RolesService>();

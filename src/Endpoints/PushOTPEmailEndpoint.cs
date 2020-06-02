@@ -8,6 +8,7 @@ using IdentityModel;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 using IdentityServer4.Serivces;
+using OpenHtmlToPdf;
 using System.IO;
 using Newtonsoft.Json;
 using IdentityServer4.Models;
@@ -93,21 +94,32 @@ namespace IdentityServer4.Endpoints
             string pathFile = "";
             if (message.FileName != "")
             {
-                StringReader sr = new StringReader(message.Message);
+                StringReader sr = new StringReader(message.AttachmentFileUrl);
 
-                Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
-                HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+                //Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                //HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
 
                 FileStream file;
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
-                    pdfDoc.Open();
+                    //PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
+                    //pdfDoc.Open();
+                    //try
+                    //{
+                    //    htmlparser.Parse(sr);
+                    //}
+                    //catch (Exception e)
+                    //{
 
-                    htmlparser.Parse(sr);
-                    pdfDoc.Close();
+                    //}
+                    //pdfDoc.Close();
 
-                    byte[] bytes = memoryStream.ToArray();
+                    PaperSize size = PaperSize.A4;
+
+                    var pdf = Pdf.From(message.AttachmentFileUrl).OfSize(size);
+                    byte[] bytes = pdf.Content();
+
+                    //byte[] bytes = memoryStream.ToArray();
                     memoryStream.Close();
                     using (var fs = new FileStream(message.FileName, FileMode.Create, FileAccess.Write))
                     {
@@ -115,7 +127,7 @@ namespace IdentityServer4.Endpoints
                         file = fs;
                     }
                 }
-                
+                //File.WriteAllBytes("C:\\Test.pdf", content);
                 System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(file.Name);
                 msg.Attachments.Add(attachment);
 

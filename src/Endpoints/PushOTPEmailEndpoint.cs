@@ -113,11 +113,22 @@ namespace IdentityServer4.Endpoints
 
                     //}
                     //pdfDoc.Close();
+                    // create the API client instance PRD
+                    //pdfcrowd.HtmlToPdfClient clientPdfCrowd =
+                    //    new pdfcrowd.HtmlToPdfClient("cgoindonesia", "cef1b4478dac7cf83c26cac11340fbd4");
 
-                    PaperSize size = PaperSize.A4;
+                    // create the API client instance DEV
+                    pdfcrowd.HtmlToPdfClient clientPdfCrowd =
+                        new pdfcrowd.HtmlToPdfClient("demo", "ce544b6ea52a5621fb9d55f8b542d14d");
 
-                    var pdf = Pdf.From(message.AttachmentFileUrl).OfSize(size);
-                    byte[] bytes = pdf.Content();
+
+                    // configure the conversion
+                    clientPdfCrowd.setPageSize("A4");
+                    clientPdfCrowd.setNoMargins(true);
+                    //PaperSize size = PaperSize.A4;
+
+                    //var pdf = Pdf.From(message.AttachmentFileUrl).OfSize(size);
+                    byte[] bytes = clientPdfCrowd.convertString(message.AttachmentFileUrl);
 
                     //byte[] bytes = memoryStream.ToArray();
                     memoryStream.Close();

@@ -84,10 +84,10 @@ namespace IdentityServer4.Endpoints
 
             var client = new SmtpClient("smtp.gmail.com", 587)
             {
-                Credentials = new NetworkCredential("acgo280320@gmail.com", "Standar123."),
+                Credentials = new NetworkCredential("non-reply@cgo.co.id", "dtech2020cgoindonesia"),
                 EnableSsl = true
             };
-            var msg = new MailMessage("acgo280320@gmail.com", message.To, message.Subject, message.Message)
+            var msg = new MailMessage("non-reply@cgo.co.id", message.To, message.Subject, message.Message)
             {
                 IsBodyHtml = true
             };

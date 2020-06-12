@@ -92,58 +92,62 @@ namespace IdentityServer4.Endpoints
                 IsBodyHtml = true
             };
             string pathFile = "";
-            if (message.FileName != "")
+            if (message.Attachment != null)
             {
-                StringReader sr = new StringReader(message.AttachmentFileUrl);
-
-                //Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
-                //HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
-
-                FileStream file;
-                using (MemoryStream memoryStream = new MemoryStream())
+                foreach(var attach in message.Attachment)
                 {
-                    //PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
-                    //pdfDoc.Open();
-                    //try
-                    //{
-                    //    htmlparser.Parse(sr);
-                    //}
-                    //catch (Exception e)
-                    //{
+                    StringReader sr = new StringReader(attach.AttachmentFileUrl);
 
-                    //}
-                    //pdfDoc.Close();
-                    // create the API client instance PRD
-                    //pdfcrowd.HtmlToPdfClient clientPdfCrowd =
-                    //    new pdfcrowd.HtmlToPdfClient("cgoindonesia", "cef1b4478dac7cf83c26cac11340fbd4");
+                    //Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
+                    //HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
 
-                    // create the API client instance DEV
-                    pdfcrowd.HtmlToPdfClient clientPdfCrowd =
-                        new pdfcrowd.HtmlToPdfClient("demo", "ce544b6ea52a5621fb9d55f8b542d14d");
-
-
-                    // configure the conversion
-                    clientPdfCrowd.setPageSize("A4");
-                    clientPdfCrowd.setNoMargins(true);
-                    //PaperSize size = PaperSize.A4;
-
-                    //var pdf = Pdf.From(message.AttachmentFileUrl).OfSize(size);
-                    byte[] bytes = clientPdfCrowd.convertString(message.AttachmentFileUrl);
-
-                    //byte[] bytes = memoryStream.ToArray();
-                    memoryStream.Close();
-                    using (var fs = new FileStream(message.FileName, FileMode.Create, FileAccess.Write))
+                    FileStream file;
+                    using (MemoryStream memoryStream = new MemoryStream())
                     {
-                        fs.Write(bytes, 0, bytes.Length);
-                        file = fs;
-                    }
-                }
-                //File.WriteAllBytes("C:\\Test.pdf", content);
-                System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(file.Name);
-                msg.Attachments.Add(attachment);
+                        //PdfWriter writer = PdfWriter.GetInstance(pdfDoc, memoryStream);
+                        //pdfDoc.Open();
+                        //try
+                        //{
+                        //    htmlparser.Parse(sr);
+                        //}
+                        //catch (Exception e)
+                        //{
 
-                pathFile = file.Name;
-                file.Dispose();
+                        //}
+                        //pdfDoc.Close();
+                        // create the API client instance PRD
+                        //pdfcrowd.HtmlToPdfClient clientPdfCrowd =
+                        //    new pdfcrowd.HtmlToPdfClient("cgoindonesia", "cef1b4478dac7cf83c26cac11340fbd4");
+
+                        // create the API client instance DEV
+                        pdfcrowd.HtmlToPdfClient clientPdfCrowd =
+                            new pdfcrowd.HtmlToPdfClient("demo", "ce544b6ea52a5621fb9d55f8b542d14d");
+
+
+                        // configure the conversion
+                        clientPdfCrowd.setPageSize("A4");
+                        clientPdfCrowd.setNoMargins(true);
+                        //PaperSize size = PaperSize.A4;
+
+                        //var pdf = Pdf.From(message.AttachmentFileUrl).OfSize(size);
+                        byte[] bytes = clientPdfCrowd.convertString(attach.AttachmentFileUrl);
+
+                        //byte[] bytes = memoryStream.ToArray();
+                        memoryStream.Close();
+                        using (var fs = new FileStream(attach.FileName, FileMode.Create, FileAccess.Write))
+                        {
+                            fs.Write(bytes, 0, bytes.Length);
+                            file = fs;
+                        }
+                    }
+                    //File.WriteAllBytes("C:\\Test.pdf", content);
+                    System.Net.Mail.Attachment attachment = new System.Net.Mail.Attachment(file.Name);
+                    msg.Attachments.Add(attachment);
+
+                    pathFile = file.Name;
+                    file.Dispose();
+                }
+               
             }
             client.Send(msg);
             msg.Attachments.Dispose();

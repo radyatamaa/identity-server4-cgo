@@ -8,9 +8,14 @@ namespace IdentityServer4.Models.ViewModels
     {
         public string Subject { get; set; }
         public string Message { get; set; }
-        public string AttachmentFileUrl { get; set; }
-        public string FileName { get; set; }
+        public IList<AttachmentFile> Attachment { get; set; }
         public string From{ get; set; }
         public string To { get; set; }
+    }
+
+    public class AttachmentFile
+    {
+        public string AttachmentFileUrl { get; set; }
+        public string FileName { get; set; }
     }
 }
